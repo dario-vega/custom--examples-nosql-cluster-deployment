@@ -81,55 +81,38 @@ In the previous section, we explained that configuring your store requires these
 
 In this section, we will use those scripts to highlight how easy is deploy a NoSQL cluster
 
-## Deployed on 2 Storage Node – capacity=1 - replication factor = 1 and secondary zone
-  ![Oracle NoSQL](./primary-secondary-cap1.jpg)
-
-
-`node1-nosql` | Other SN ( `node2-nosql` ) |
----|---|
-`cd $HOME/examples-nosql-cluster-deployment/script` | `cd $HOME/examples-nosql-cluster-deployment/script` |
-`source env.sh` | `source env.sh` |
-`bash stop.sh` | `bash stop.sh` | 
-`bash clean.sh` | `bash clean.sh` | 
-`bash boot.sh` | `bash boot.sh` | 
-`kv_admin load -file primary-secondary.kvs` | -- |
-
-`node1-nosql` |
----|
-`kv_proxy &`|
-
-
-## Deployed on 2 Storage Node – capacity=3 - replication factor = 1 and secondary zone
-  ![Oracle NoSQL](./primary-secondary-cap3.jpg)
-
-`node1-nosql` | Other SN ( `node2-nosql`) |
----|---|
-`cd $HOME/examples-nosql-cluster-deployment/script` | `cd $HOME/examples-nosql-cluster-deployment/script` |
-`source env.sh` | `source env.sh` |
-`bash stop.sh` | `bash stop.sh` | 
-`bash clean.sh` | `bash clean.sh` | 
-`bash boot-cap3.sh` | `bash boot-cap3.sh` | 
-`kv_admin load -file primary-secondary.kvs` | -- |
-
-`node1-nosql` |
----|
-`kv_proxy &`|
-
 ## Deployed on 6 Storage Node – capacity=3 - replication factor = 3 and secondary zone
   ![Oracle NoSQL](./primary-secondary-cap3-rf3.jpg)
 
-`node1-nosql` | Other SN ( `node2-nosql node3-nosql node4-nosql node5-nosql node6-nosql`) |
+`node1-nosql` | Other SN ( `node2-nosql` `node3-nosql`) |
 ---|---|
 `cd $HOME/examples-nosql-cluster-deployment/script` | `cd $HOME/examples-nosql-cluster-deployment/script` |
 `source env.sh` | `source env.sh` |
 `bash stop.sh` | `bash stop.sh` | 
 `bash clean.sh` | `bash clean.sh` | 
-`bash boot-cap3.sh` | `bash boot-cap3.sh` | 
-`kv_admin load -file primary-secondary-rf3.kvs` | -- |
+`bash boot-default-sec.sh configure` | -- |
+`bash start.sh` | -- |
+`cd ; zip -r $HOME/security.zip $KVROOT/security; cd - ` | -- |
+copy $HOME/security.zip from `node1-nosql` to other nodes| -- |
+-- |`cd; unzip -o security.zip -d /; cd -;`| -- | 
+-- |`bash boot-default-sec.sh enable`| -- |
+-- |`bash start.sh`| -- |
+`kv_admin  -security $KVROOT/security/client.security load -file primary-secondary-rf3.kvs` | -- |
+`bash create-users.sh` | -- |
+copy $KVROOT/security/root.zip from `node1-nosql` to other nodes| -- |
+-- |`unzip -o $KVROOT/security/root.zip -d $KVROOT/security`|
 
-`node1-nosql` |
+`node1-nosql` | 
 ---|
-`kv_proxy &`|
+`cd $HOME/examples-nosql-cluster-deployment/script` |
+`source env-proxy.sh` |
+`bash clean-proxy.sh` |
+`cp $KVROOT/security/proxy.zip $PROXYHOME` | 
+`bash generate-self-signed-cert-http-proxy.sh` |
+`unzip -o $PROXYHOME/proxy.zip -d $PROXYHOME` | 
+`pkill -f httpproxy.jar` |
+`kv_proxy_sec &` |
+
 
 ## Administration - Switchover
 
