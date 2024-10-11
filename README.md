@@ -464,7 +464,7 @@ Instructions for secure cluster
 
 ````bash
 cd $HOME/oracle-nosql-java-sdk/examples/
-java -Djavax.net.ssl.trustStorePassword=`cat /home/opc/proxy/pwd`  -Djavax.net.ssl.trustStore=$PROXYHOME/driver.trust \
+java -Djavax.net.ssl.trustStorePassword=`cat $PROXYHOME/pwd`  -Djavax.net.ssl.trustStore=$PROXYHOME/driver.trust \
 -cp .:../lib/nosqldriver.jar     BasicTableExample https://$HOSTNAME:$PROXYPORTSEC -useKVProxy \
 -user application_user -password  'DriverPass@@123'
 cd -
